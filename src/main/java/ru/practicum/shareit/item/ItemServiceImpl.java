@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addNewItem(Long userId, NewItemRequest request) {
-        if (!userRepository.findAll().stream().filter(user -> user.getId()==userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
             throw new NotFoundUserException("Пользователя с id = " + userId + " нет.");
         }
 
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItem(Long userId, Long itemId) {
-        if (!userRepository.findAll().stream().filter(user -> user.getId()==userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
             throw new NotFoundException("Такого Пользователя нет.");
         }
 
@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundUserForItemException("Такой вещи у пользователя нет.");
         }
 
-        if (!userRepository.findAll().stream().filter(user -> user.getId()==userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
             throw new NotFoundException("Такого Пользователя нет.");
         }
 

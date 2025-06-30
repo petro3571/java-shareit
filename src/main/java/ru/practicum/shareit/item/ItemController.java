@@ -34,20 +34,20 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable(name="itemId") long itemId) {
+                           @PathVariable(name = "itemId") long itemId) {
         itemService.deleteItem(userId, itemId);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto patchItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                             @PathVariable(name="itemId") long itemId,
+                             @PathVariable(name = "itemId") long itemId,
                              @Valid @RequestBody UpdateItemRequest item) {
         return itemService.patchItem(userId,itemId,item);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getUserItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                                      @PathVariable(name="itemId") long itemId) {
+                                      @PathVariable(name = "itemId") long itemId) {
         return itemService.getItem(userId,itemId);
     }
 
