@@ -35,7 +35,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addNewItem(Long userId, NewItemRequest request) {
-        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId().equals(userId)).findFirst().isPresent()) {
             throw new NotFoundUserException("Пользователя с id = " + userId + " нет.");
         }
 
@@ -47,11 +47,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void deleteItem(Long userId, Long itemId) {
-        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId().equals(userId)).findFirst().isPresent()) {
             throw new NotFoundException("Такого Пользователя нет.");
         }
 
-        if (itemRepository.getItem(itemId).getOwnerId() == userId) {
+        if (itemRepository.getItem(itemId).getOwnerId().equals(userId)) {
             itemRepository.deleteByUserIdAndItemId(userId, itemId);
         }
     }
@@ -60,11 +60,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto patchItem(Long userId, Long itemId, UpdateItemRequest request) {
         Item item = ItemMapper.updateItemFields(new Item(), request);
 
-        if (!itemRepository.findByUserId(userId).stream().filter(i -> i.getId() == itemId).findFirst().isPresent()) {
+        if (!itemRepository.findByUserId(userId).stream().filter(i -> i.getId().equals(itemId)).findFirst().isPresent()) {
             throw new NotFoundUserForItemException("Такой вещи у пользователя нет.");
         }
 
-        if (!userRepository.findAll().stream().filter(user -> user.getId() == userId).findFirst().isPresent()) {
+        if (!userRepository.findAll().stream().filter(user -> user.getId().equals(userId)).findFirst().isPresent()) {
             throw new NotFoundException("Такого Пользователя нет.");
         }
 

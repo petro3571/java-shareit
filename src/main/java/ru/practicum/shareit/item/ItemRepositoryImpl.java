@@ -13,7 +13,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public List<Item> findByUserId(Long userId) {
-        return items.stream().filter(item -> item.getOwnerId() == userId).collect(Collectors.toList());
+        return items.stream().filter(item -> item.getOwnerId().equals(userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public void deleteByUserIdAndItemId(Long userId, Long itemId) {
         List<Item> findList = findByUserId(userId);
         for (Item item : findList) {
-            if (item.getId() == itemId) {
+            if (item.getId().equals(itemId)) {
                 items.remove(item);
             }
         }
