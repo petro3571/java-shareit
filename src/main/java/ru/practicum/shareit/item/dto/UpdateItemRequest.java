@@ -15,8 +15,4 @@ public class UpdateItemRequest {
     public boolean hasDescription() {
         return !(description == null || description.isBlank());
     }
-
-//    public boolean hasAvailable() {
-//        return !(available == false);
-//    }
 }

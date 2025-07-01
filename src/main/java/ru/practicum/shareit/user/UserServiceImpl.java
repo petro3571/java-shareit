@@ -19,11 +19,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto saveUser(NewUserRequest user) {
-        Optional<User> findUser = repository.findAll().stream().filter(user1 -> user1.getEmail().equals(user.getEmail())).findFirst();
-        if (findUser.isPresent()) {
-            throw new RuntimeException("Пользователь с почтой " + user.getEmail() + " уже существует.");
-        }
-
         User newUser = repository.save(UserMapper.mapToUser(user));
         return UserMapper.mapToUserDto(newUser);
     }
@@ -32,11 +27,6 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UpdateUserRequest user,Long userId) {
         if (repository.getUserById(userId) == null) {
             throw new NotFoundException("Пользователя с id = " + userId + " нет.");
-        }
-
-        Optional<User> findUser = repository.findAll().stream().filter(user1 -> user1.getEmail().equals(user.getEmail())).findFirst();
-        if (findUser.isPresent()) {
-            throw new RuntimeException("Пользователь с почтой " + user.getEmail() + " уже существует.");
         }
 
         User updateUser = UserMapper.updateUserFields(new User(), user);
@@ -53,12 +43,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto deleteUser(Long userId) {
-        User userForDel = repository.getUserById(userId);
-
-        if (!userForDel.equals(null)) {
-           userForDel = repository.deleteUser(userForDel);
-           return UserMapper.mapToUserDto(userForDel);
-        }
-        return null;
+            User userForDel = repository.getUserById(userId);
+            userForDel = repository.deleteUser(userForDel);
+            return UserMapper.mapToUserDto(userForDel);
     }
 }

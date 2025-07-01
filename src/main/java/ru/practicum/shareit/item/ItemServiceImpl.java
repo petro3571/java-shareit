@@ -12,7 +12,7 @@ import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItems(String text) {
         if (text.isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
         return itemRepository.searchItems(text).stream().map(ItemMapper::mapToItemDto).toList();

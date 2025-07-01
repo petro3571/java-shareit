@@ -1,13 +1,18 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exceptions.EmailAlreadyExistException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
     private final List<User> users = new ArrayList<>();
+
+    private final Set<String> mailSet = new HashSet<>();
 
     @Override
     public List<User> findAll() {
@@ -16,13 +21,22 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
+        if (mailSet.contains(user.getEmail())) {
+            throw new EmailAlreadyExistException("Пользователь с почтой " + user.getEmail() + " уже существует.");
+        }
+
         user.setId(getId());
         users.add(user);
+        mailSet.add(user.getEmail());
         return user;
     }
 
     @Override
     public User update(User user) {
+        if (mailSet.contains(user.getEmail())) {
+            throw new EmailAlreadyExistException("Пользователь с почтой " + user.getEmail() + " уже существует.");
+        }
+
        User updateUser = getUserById(user.getId());
        if (user.getName() != null) {
            updateUser.setName(user.getName());
@@ -30,6 +44,7 @@ public class UserRepositoryImpl implements UserRepository {
        if (user.getEmail() != null) {
            updateUser.setEmail(user.getEmail());
        }
+        mailSet.add(updateUser.getEmail());
        return users.set(updateUser.getId().intValue() - 1, updateUser);
     }
 
