@@ -55,7 +55,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User deleteUser(User user) {
-        return users.remove(user.getId().intValue() - 1);
+        User deletedUser = users.remove(user.getId().intValue() - 1);
+        mailSet.remove(user.getEmail());
+        return deletedUser;
     }
 
     private long getId() {
