@@ -5,9 +5,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data/
+      - ./db/postgres:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=later
+      - POSTGRES_DB=shareit
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=12345
     healthcheck:
@@ -27,32 +27,47 @@ services:
       - -c
       - |
         set -e
-        psql postgresql://dbuser:12345@db:5432/later -v ON_ERROR_STOP=1 <<-EOSQL
+        psql postgresql://dbuser:12345@db:5432/shareit -v ON_ERROR_STOP=1 <<-EOSQL
         CREATE TABLE IF NOT EXISTS users (
+          user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          name VARCHAR(40) NOT NULL,
+          email VARCHAR(255) NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS booking_status (
+          id INT PRIMARY KEY,
+          name VARCHAR(40) NOT NULL
+        );
+        
+        INSERT INTO booking_status (id, name) VALUES
+          (1, 'WAITING'),
+          (2, 'APPROVED'),
+          (3, 'REJECTED'),
+          (4, 'CANCELED')
+        ON CONFLICT (id) DO NOTHING;
+        
+        CREATE TABLE IF NOT EXISTS item_request (
           id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-          email varchar(320),
-          name varchar(100),
+          description VARCHAR(255) NOT NULL,
+          user_id INTEGER REFERENCES users ON DELETE CASCADE,
+          created DATE NOT NULL
         );
         
         CREATE TABLE IF NOT EXISTS items (
-          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-          user_id BIGINT,
-          url VARCHAR(1000),
-          CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id),
-          UNIQUE(id, url)
+          item_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          name VARCHAR(40) NOT NULL,
+          description VARCHAR(255) NOT NULL,
+          available BOOLEAN DEFAULT FALSE,
+          owner_id INTEGER REFERENCES users ON DELETE CASCADE,
+          request_id INTEGER REFERENCES item_request ON DELETE CASCADE
         );
-
-#        CREATE TABLE IF NOT EXISTS tags (
-#          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-#          item_id BIGINT,
-#          name VARCHAR(50),
-#          CONSTRAINT fk_tags_to_items FOREIGN KEY(item_id) REFERENCES items(id)
-#        );
-#        CREATE TABLE IF NOT EXISTS item_notes (
-#          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-#          item_id BIGINT,
-#          text VARCHAR(1000),
-#          note_date timestamp,
-#          CONSTRAINT items FOREIGN KEY(item_id) REFERENCES items(id)
-#        );
+        
+        CREATE TABLE IF NOT EXISTS booking (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          start_day DATE NOT NULL,
+          end_day DATE NOT NULL,
+          item_id INTEGER REFERENCES items ON DELETE CASCADE,
+          booker_id INTEGER REFERENCES users ON DELETE CASCADE,
+          booking_status_id INTEGER REFERENCES booking_status ON DELETE SET NULL
+        );
         EOSQL
