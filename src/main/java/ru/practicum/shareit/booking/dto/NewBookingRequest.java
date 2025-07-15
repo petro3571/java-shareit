@@ -10,11 +10,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class NewBookingRequest {
-    @Future
     @NotNull
     private LocalDateTime start;
 
-    @Future
     @NotNull
     private LocalDateTime end;
 
