@@ -3,3 +3,4 @@
 --                (2, 'APPROVED'),
 --                (3, 'REJECTED'),
 --                (4, 'CANCELED');
+SELECT * FROM booking_status;

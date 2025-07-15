@@ -1,4 +1,7 @@
-//package ru.practicum.shareit.user;
-//
-//public interface NewUserRepo extends {
-//}
+package ru.practicum.shareit.user;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.user.model.User;
+
+public interface NewUserRepo extends JpaRepository<User,Long> {
+}
