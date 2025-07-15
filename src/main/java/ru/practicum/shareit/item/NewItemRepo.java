@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NewItemRepo extends JpaRepository<Item, Long> {
     @Query(value = "select * " +
-            "from items as it "+
+            "from items as it " +
             "where (LOWER(it.name) like LOWER(?1) OR LOWER(it.description) like LOWER(?1)) AND it.available = true", nativeQuery = true
             )
     List<Item> searchItemBy(String text);

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ItemDtoWithDateAndComments{
+public class ItemDtoWithDateAndComments {
 
     private Long id;
 

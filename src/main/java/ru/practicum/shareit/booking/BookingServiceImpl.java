@@ -11,7 +11,6 @@ import ru.practicum.shareit.exceptions.NotFoundUserException;
 import ru.practicum.shareit.item.NewItemRepo;
 import ru.practicum.shareit.user.NewUserRepo;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
