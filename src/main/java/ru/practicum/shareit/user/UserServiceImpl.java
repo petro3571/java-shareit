@@ -43,12 +43,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Пользователя с id = " + userId + " нет.");
         }
 
+        User updateUser = UserMapper.updateUserFields(new User(), user);
+
         if (repository.findAll().stream().map(u -> u.getEmail())
-                .collect(Collectors.toSet()).contains(user.getEmail())) {
+                .collect(Collectors.toSet()).contains(updateUser.getEmail()) && updateUser.getEmail() != null) {
             throw new EmailAlreadyExistException("Пользователь с почтой " + user.getEmail() + " уже существует.");
         }
 
-        User updateUser = UserMapper.updateUserFields(new User(), user);
         updateUser.setId(userId);
         updateUser = repository.save(updateUser);
         return UserMapper.mapToUserDto(updateUser);
