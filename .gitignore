@@ -33,17 +33,10 @@ build/
 .vscode/
 
 *.db
+.db/
 db/**.jar
 *.class
 *.DS_Store
-
-# IntelliJ
-.idea/
-*.iml
-*.iws
-
-# Maven
-target/
 
 # Logs
 *.log
