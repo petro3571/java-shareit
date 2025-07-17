@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 
 import java.time.LocalDateTime;
 

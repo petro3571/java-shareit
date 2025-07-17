@@ -1,15 +1,19 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.enums.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.NewBookingRequest;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
-import ru.practicum.shareit.item.NewItemRepo;
-import ru.practicum.shareit.user.NewUserRepo;
+import ru.practicum.shareit.item.repository.NewItemRepo;
+import ru.practicum.shareit.user.repository.NewUserRepo;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -49,7 +53,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
     public BookingDto patchApproved(Long userId, Long bookingId, Boolean approved) {
         Booking booking = repository.getById(bookingId);
 

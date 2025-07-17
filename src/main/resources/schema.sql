@@ -1,20 +1,13 @@
-CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS users (
           user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
           name VARCHAR(40),
-          email VARCHAR(255)
+          email VARCHAR(255) UNIQUE
         );
 
         CREATE TABLE IF NOT EXISTS booking_status (
           id INT PRIMARY KEY,
           name VARCHAR(40) NOT NULL
         );
-
-        INSERT INTO booking_status (id, name) VALUES
-          (1, 'WAITING'),
-          (2, 'APPROVED'),
-          (3, 'REJECTED'),
-          (4, 'CANCELED')
-        ON CONFLICT (id) DO NOTHING;
 
         CREATE TABLE IF NOT EXISTS item_request (
           id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

@@ -1,10 +1,6 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithDateAndComments;
-import ru.practicum.shareit.item.dto.NewItemRequest;
-import ru.practicum.shareit.item.dto.UpdateItemRequest;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 
 public class ItemMapper {

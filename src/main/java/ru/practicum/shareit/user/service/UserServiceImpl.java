@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,9 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.NewUserRequest;
 import ru.practicum.shareit.user.dto.UpdateUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.NewUserRepo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +28,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto saveUser(NewUserRequest user) {
         if (repository.findAll().stream().map(u -> u.getEmail())
                 .collect(Collectors.toSet()).contains(user.getEmail())) {
@@ -37,7 +38,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto updateUser(UpdateUserRequest user, Long userId) {
         if (repository.getById(userId) == null) {
             throw new NotFoundException("Пользователя с id = " + userId + " нет.");
@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto deleteUser(Long userId) {
             User userForDel = repository.getById(userId);
             repository.delete(userForDel);

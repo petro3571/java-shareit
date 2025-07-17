@@ -1,20 +1,22 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.NotFoundUserException;
 import ru.practicum.shareit.exceptions.NotFoundUserForItemException;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.repository.NewItemRepo;
 import ru.practicum.shareit.item.comment.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithDateAndComments;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.NewUserRepo;
+import ru.practicum.shareit.user.repository.NewUserRepo;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -85,7 +87,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public ItemDto patchItem(Long userId, Long itemId, UpdateItemRequest request) {
         Item item = ItemMapper.updateItemFields(new Item(), request);
 
@@ -116,7 +117,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
     public CommentDto postComment(Long userId, Long itemId, NewCommentRequest request) {
         if (!userRepository.findAll().stream().filter(user -> user.getId().equals(userId)).findFirst().isPresent()) {
             throw new NotFoundException("Такого Пользователя нет.");
