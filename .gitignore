@@ -1,5 +1,8 @@
 HELP.md
 target/
+out/
+bin/
+build/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -14,6 +17,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
+.idea/
 .idea
 *.iws
 *.iml
@@ -33,6 +37,15 @@ build/
 .vscode/
 
 *.db
+.db/
 db/**.jar
 *.class
 *.DS_Store
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Base
+db/postgres/
