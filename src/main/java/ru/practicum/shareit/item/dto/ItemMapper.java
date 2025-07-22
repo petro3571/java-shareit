@@ -9,6 +9,11 @@ public class ItemMapper {
         item.setName(request.getName());
         item.setDescription(request.getDescription());
         item.setAvailable(request.getAvailable());
+
+        if (request.hasItemRequestId()) {
+            item.setRequestId(request.getRequestId());
+        }
+
         return item;
     }
 

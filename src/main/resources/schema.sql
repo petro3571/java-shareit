@@ -1,7 +1,7 @@
         CREATE TABLE IF NOT EXISTS users (
           user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
           name VARCHAR(40),
-          email VARCHAR(255) UNIQUE
+          email VARCHAR(255)
         );
 
         CREATE TABLE IF NOT EXISTS booking_status (
@@ -9,11 +9,11 @@
           name VARCHAR(40) NOT NULL
         );
 
-        CREATE TABLE IF NOT EXISTS item_request (
+        CREATE TABLE IF NOT EXISTS item_requests (
           id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
           description VARCHAR(255) NOT NULL,
           user_id INTEGER REFERENCES users ON DELETE CASCADE,
-          created DATE NOT NULL
+          created TIMESTAMP WITHOUT TIME ZONE
         );
 
         CREATE TABLE IF NOT EXISTS items (
@@ -22,7 +22,7 @@
           description VARCHAR(255),
           available BOOLEAN,
           owner_id INTEGER REFERENCES users ON DELETE CASCADE,
-          request_id INTEGER REFERENCES item_request ON DELETE CASCADE
+          request_id INTEGER REFERENCES item_requests ON DELETE CASCADE
         );
 
         CREATE TABLE IF NOT EXISTS booking (
@@ -40,4 +40,10 @@
           author_id INTEGER REFERENCES users ON DELETE CASCADE,
           text VARCHAR(255),
           created TIMESTAMP WITHOUT TIME ZONE
+        );
+
+        CREATE TABLE IF NOT EXISTS responses (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          item_id INTEGER REFERENCES items ON DELETE CASCADE,
+          request_id INTEGER REFERENCES item_requests ON DELETE CASCADE
         );

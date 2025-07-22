@@ -14,4 +14,10 @@ public class NewItemRequest {
 
     @NotNull
     private Boolean available;
+
+    private Long requestId;
+
+    public boolean hasItemRequestId() {
+        return !(requestId == null);
+    }
 }

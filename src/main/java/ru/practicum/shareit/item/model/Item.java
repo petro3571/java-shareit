@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 /**
@@ -32,6 +33,9 @@ public class Item {
 
     @Column(name = "available")
     private boolean available;
+
+    @Column(name = "request_id")
+    private Long requestId;
 
     @Override
     public boolean equals(Object o) {

@@ -16,6 +16,10 @@ import ru.practicum.shareit.item.dto.ItemDtoWithDateAndComments;
 import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.dto.UpdateItemRequest;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepo;
+import ru.practicum.shareit.request.responsetoitemreq.ResponseToItemReq;
+import ru.practicum.shareit.request.responsetoitemreq.ResponseToItemReqRepo;
 import ru.practicum.shareit.user.repository.NewUserRepo;
 import ru.practicum.shareit.user.model.User;
 
@@ -32,6 +36,8 @@ public class ItemServiceImpl implements ItemService {
     private final NewItemRepo itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepo itemRequestRepository;
+    private final ResponseToItemReqRepo responseRepository;
 
     @Override
     public List<ItemDto> getItems(Long userId) {
@@ -70,7 +76,19 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.mapToItem(request);
         User findUser = userRepository.getById(userId);
         item.setOwner(findUser);
+
         item = itemRepository.save(item);
+
+        if (item.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.getById(item.getRequestId());
+
+            if (itemRequest != null) {
+                ResponseToItemReq response = new ResponseToItemReq();
+                response.setItemRequest(itemRequest);
+                response.setItem(item);
+                responseRepository.save(response);
+            }
+        }
         return ItemMapper.mapToItemDto(item);
     }
 

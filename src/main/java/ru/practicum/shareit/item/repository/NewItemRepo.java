@@ -14,4 +14,10 @@ public interface NewItemRepo extends JpaRepository<Item, Long> {
     List<Item> searchItemBy(String text);
 
     List<Item> findByOwner_id(Long userId);
+
+    @Query(value = "select it " +
+            "from Item as it " +
+            "where it.requestId = ?1"
+    )
+    List<Item> findByRequest_id(Long requestId);
 }
