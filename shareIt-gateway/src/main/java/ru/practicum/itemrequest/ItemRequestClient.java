@@ -20,6 +20,7 @@ public class ItemRequestClient extends BaseClient {
                         .build()
         );
     }
+
     public ResponseEntity<Object> saveRequest(Long userId, NewItemRequestDto request) {
         return post("", userId, request);
     }
