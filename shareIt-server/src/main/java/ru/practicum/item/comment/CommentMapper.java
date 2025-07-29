@@ -4,7 +4,6 @@ public class CommentMapper {
     public static Comment mapToComment(CommentDto request) {
         Comment comment = new Comment();
         comment.setText(request.getText());
-//        comment.setCreated(request.getCreated());
         return comment;
     }
 

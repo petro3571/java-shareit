@@ -2,7 +2,6 @@ package ru.practicum.booking;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.practicum.booking.BookingStatus;
 import ru.practicum.item.Item;
 import ru.practicum.user.User;
 

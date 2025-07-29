@@ -7,9 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.BaseClient;
-import ru.practicum.item.NewItemDto;
-import ru.practicum.user.NewUserDto;
-import ru.practicum.user.UpdateUserDto;
 
 @Service
 public class BookingClient extends BaseClient {

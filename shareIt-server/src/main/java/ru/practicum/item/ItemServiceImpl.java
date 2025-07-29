@@ -13,11 +13,14 @@ import ru.practicum.item.comment.Comment;
 import ru.practicum.item.comment.CommentDto;
 import ru.practicum.item.comment.CommentMapper;
 import ru.practicum.item.comment.CommentRepository;
+import ru.practicum.itemrequest.ItemRequest;
+import ru.practicum.itemrequest.ItemRequestRepo;
+import ru.practicum.itemrequest.responsetoitemreq.ResponseToItemReq;
+import ru.practicum.itemrequest.responsetoitemreq.ResponseToItemReqRepo;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,8 +33,8 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-//    private final ItemRequestRepo itemRequestRepository;
-//    private final ResponseToItemReqRepo responseRepository;
+    private final ItemRequestRepo itemRequestRepository;
+    private final ResponseToItemReqRepo responseRepository;
 
     @Override
     public List<ItemDto> getItems(Long userId) {
@@ -56,7 +59,6 @@ public class ItemServiceImpl implements ItemService {
         } else {
             newItem.setLastBooking(null);
         }
-//        newItem.setNextBooking(bookingRepository.findFirstByItemIdAndStartAfterNow(itemId));
         newItem.setNextBooking(bookingRepository.findFirstByItemIdAndStartAfter(itemId, LocalDateTime.now().plusHours(8)));
         return newItem;
 
@@ -74,15 +76,15 @@ public class ItemServiceImpl implements ItemService {
 
         item = itemRepository.save(item);
 
-//        if (item.getRequestId() != null) {
-//            if (itemRequestRepository.getById(item.getRequestId()) != null) {
-//                ItemRequest itemRequest = itemRequestRepository.getById(item.getRequestId());
-//                ResponseToItemReq response = new ResponseToItemReq();
-//                response.setItemRequest(itemRequest);
-//                response.setItem(item);
-//                responseRepository.save(response);
-//            }
-//        }
+        if (item.getRequestId() != null) {
+            if (itemRequestRepository.getById(item.getRequestId()) != null) {
+                ItemRequest itemRequest = itemRequestRepository.getById(item.getRequestId());
+                ResponseToItemReq response = new ResponseToItemReq();
+                response.setItemRequest(itemRequest);
+                response.setItem(item);
+                responseRepository.save(response);
+            }
+        }
         return ItemMapper.mapToItemDto(item);
     }
 

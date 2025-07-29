@@ -3,9 +3,6 @@ package ru.practicum.itemrequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import ru.practicum.itemrequest.ItemRequestDtoWithResponses;
-
-
 import java.util.List;
 
 /**
@@ -41,4 +38,3 @@ public class ItemRequestController {
         return service.getRequest(requestId, userId);
     }
 }
-

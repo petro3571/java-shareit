@@ -10,4 +10,3 @@ public class ResponseToItemReqDto {
     private Long ownerId;
     private Long requestId;
 }
-

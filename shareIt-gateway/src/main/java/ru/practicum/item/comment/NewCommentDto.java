@@ -9,6 +9,4 @@ import java.time.LocalDateTime;
 public class NewCommentDto {
     @NotBlank
     private String text;
-
-//    private LocalDateTime created;
 }

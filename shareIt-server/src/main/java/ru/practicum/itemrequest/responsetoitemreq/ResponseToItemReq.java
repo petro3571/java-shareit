@@ -1,11 +1,9 @@
 package ru.practicum.itemrequest.responsetoitemreq;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.practicum.item.comment.Comment;
 import ru.practicum.item.Item;
 import ru.practicum.itemrequest.ItemRequest;
 

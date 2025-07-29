@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.item.ItemClient;
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -39,4 +38,3 @@ public class ItemRequestController {
         return client.getRequest(requestId, userId);
     }
 }
-

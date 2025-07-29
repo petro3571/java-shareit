@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.BaseClient;
 import ru.practicum.item.comment.NewCommentDto;
-import ru.practicum.user.NewUserDto;
-import ru.practicum.user.UpdateUserDto;
-
-import java.util.List;
 
 @Service
 public class ItemClient extends BaseClient {

@@ -23,4 +23,3 @@ public class ItemRequestDtoWithResponses {
 
     private List<ResponseToItemReqDto> responses = new ArrayList<>();
 }
-

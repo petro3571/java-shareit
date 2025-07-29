@@ -37,4 +37,3 @@ public class ItemDtoJsonTest {
         assertThat(result).extractingJsonPathBooleanValue("$.available").isEqualTo(true);
     }
 }
-
