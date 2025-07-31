@@ -234,7 +234,6 @@ class ItemRequestServiceImplIntegrationTest {
 
     @Test
     void getRequest_WhenNoResponses_ShouldReturnRequestWithoutResponses() {
-        // Создаем запрос без ответов
         ItemRequestDtoWithResponses newRequest = createItemRequest(anotherUser, "Запрос без ответов");
 
         ItemRequestDtoWithResponses result = itemRequestService.getRequest(newRequest.getId(), requestOwner.getId());
