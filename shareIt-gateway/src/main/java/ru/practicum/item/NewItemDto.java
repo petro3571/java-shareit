@@ -16,8 +16,4 @@ public class NewItemDto {
     private Boolean available;
 
     private Long requestId;
-
-    public boolean hasItemRequestId() {
-        return !(requestId == null);
-    }
 }

@@ -13,7 +13,6 @@ public class CommentMapper {
         dto.setText(comment.getText());
         dto.setAuthorName(comment.getAuthor().getName());
         dto.setCreated(comment.getCreated());
-
         return dto;
     }
 }

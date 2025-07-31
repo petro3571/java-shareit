@@ -8,7 +8,6 @@ public class ResponseToItemReqMapper {
         dto.setNameItem(response.getItem().getName());
         dto.setOwnerId(response.getItem().getOwner().getId());
         dto.setRequestId(response.getItemRequest().getId());
-
         return dto;
     }
 }

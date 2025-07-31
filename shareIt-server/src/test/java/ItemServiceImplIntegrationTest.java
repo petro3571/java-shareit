@@ -10,6 +10,9 @@ import ru.practicum.ShareItServerApp;
 import ru.practicum.booking.BookingRepository;
 import ru.practicum.booking.Booking;
 import ru.practicum.booking.BookingStatus;
+import ru.practicum.exceptions.NotFoundUserException;
+import ru.practicum.exceptions.NotFoundUserForItemException;
+import ru.practicum.item.comment.CommentDto;
 import ru.practicum.item.comment.CommentRepository;
 import ru.practicum.item.comment.Comment;
 import ru.practicum.item.ItemRepository;
@@ -20,6 +23,7 @@ import ru.practicum.user.UserRepository;
 import ru.practicum.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -150,5 +154,155 @@ class ItemServiceImplIntegrationTest {
         ItemDto result = itemService.getItem(owner.getId(), item.getId());
 
         assertNull(result.getLastBooking());
+    }
+
+    @Test
+    void getItems_ShouldReturnAllItemsForOwner() {
+        List<ItemDto> result = itemService.getItems(owner.getId());
+
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(item.getId(), result.get(0).getId());
+    }
+
+    @Test
+    void getItems_WhenNoItems_ShouldReturnEmptyList() {
+        bookingRepository.deleteAll();
+        commentRepository.deleteAll();
+        itemRepository.deleteAll();
+
+        List<ItemDto> result = itemService.getItems(owner.getId());
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void addNewItem_ShouldSaveItem() {
+        ItemDto newItem = new ItemDto();
+        newItem.setName("New Item");
+        newItem.setDescription("New Description");
+        newItem.setAvailable(true);
+
+        ItemDto result = itemService.addNewItem(owner.getId(), newItem);
+
+        assertNotNull(result.getId());
+        assertEquals(newItem.getName(), result.getName());
+        assertEquals(newItem.getDescription(), result.getDescription());
+        assertEquals(newItem.isAvailable(), result.isAvailable());
+    }
+
+    @Test
+    void addNewItem_WhenUserNotFound_ShouldThrowException() {
+        ItemDto newItem = new ItemDto();
+        newItem.setName("New Item");
+        newItem.setDescription("New Description");
+        newItem.setAvailable(true);
+
+        assertThrows(NotFoundUserException.class, () -> itemService.addNewItem(999L, newItem));
+    }
+
+    @Test
+    void deleteItem_ShouldRemoveItem() {
+        bookingRepository.deleteAll();
+        commentRepository.deleteAll();
+        itemService.deleteItem(owner.getId(), item.getId());
+
+        assertFalse(itemRepository.existsById(item.getId()));
+    }
+
+    @Test
+    void patchItem_ShouldUpdateFields() {
+        ItemDto update = new ItemDto();
+        update.setName("Updated Name");
+        update.setDescription("Updated Description");
+        update.setAvailable(false);
+
+        ItemDto result = itemService.patchItem(owner.getId(), item.getId(), update);
+
+        assertEquals(update.getName(), result.getName());
+        assertEquals(update.getDescription(), result.getDescription());
+        assertEquals(update.isAvailable(), result.isAvailable());
+    }
+
+    @Test
+    void patchItem_WhenUserNotOwner_ShouldThrowException() {
+        ItemDto update = new ItemDto();
+        update.setName("Updated Name");
+
+        assertThrows(NotFoundUserForItemException.class, () -> itemService.patchItem(booker.getId(), item.getId(), update));
+    }
+
+    @Test
+    void searchItems_ShouldReturnMatchingItems() {
+        List<ItemDto> result = itemService.searchItems("Drel");
+
+        assertFalse(result.isEmpty());
+        assertEquals(item.getId(), result.get(0).getId());
+    }
+
+    @Test
+    void searchItems_WhenNoMatches_ShouldReturnEmptyList() {
+        List<ItemDto> result = itemService.searchItems("NonExistingItem");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void searchItems_WhenEmptyText_ShouldReturnEmptyList() {
+        List<ItemDto> result = itemService.searchItems("");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void postComment_ShouldSaveComment() {
+        CommentDto newComment = new CommentDto();
+        newComment.setText("New Comment");
+
+        User newOwner = new User();
+        newOwner.setName("newOwner");
+        newOwner.setEmail("newOwner@example.com");
+        newOwner = userRepository.save(newOwner);
+
+        User newBooker = new User();
+        newBooker.setName("newBooker");
+        newBooker.setEmail("newBooker@example.com");
+        newBooker = userRepository.save(newBooker);
+
+        Item newItem = new Item();
+        newItem.setName("newItem");
+        newItem.setDescription("newItemDescription");
+        newItem.setAvailable(true);
+        newItem.setOwner(newOwner);
+        newItem = itemRepository.save(newItem);
+
+        Booking finishedBooking = new Booking();
+        finishedBooking.setItem(newItem);
+        finishedBooking.setBooker(newBooker);
+        finishedBooking.setStatus(BookingStatus.APPROVED);
+        finishedBooking.setStartDate(LocalDateTime.now().minusDays(5));
+        finishedBooking.setEndDate(LocalDateTime.now().minusDays(4));
+        bookingRepository.save(finishedBooking);
+
+        CommentDto result = itemService.postComment(newBooker.getId(), newItem.getId(), newComment);
+
+        assertNotNull(result.getId());
+        assertEquals(newComment.getText(), result.getText());
+    }
+
+    @Test
+    void postComment_WhenUserNotBooker_ShouldThrowException() {
+        CommentDto newComment = new CommentDto();
+        newComment.setText("New Comment");
+
+        assertThrows(NullPointerException.class, () -> itemService.postComment(owner.getId(), item.getId(), newComment));
+    }
+
+    @Test
+    void postComment_WhenBookingNotFinished_ShouldThrowException() {
+        CommentDto newComment = new CommentDto();
+        newComment.setText("New Comment");
+
+        assertThrows(RuntimeException.class, () -> itemService.postComment(booker.getId(), item.getId(), newComment));
     }
 }

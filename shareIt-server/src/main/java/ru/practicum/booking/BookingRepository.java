@@ -15,8 +15,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByEndDateBefore(LocalDateTime localDateTime);
 
-    List<Booking> findByEndDateAfter(LocalDateTime localDateTime);
-
     List<Booking> findByStartDateAfter(LocalDateTime localDateTime);
 
     List<Booking> findByStatusLike(BookingStatus status);
@@ -25,9 +23,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT new ru.practicum.booking.BookingDtoWithDate(b.id, b.startDate, b.endDate) FROM Booking b WHERE b.item.id = :itemId AND b.startDate > :now ORDER BY b.startDate ASC LIMIT 1")
     BookingDtoWithDate findFirstByItemIdAndStartAfter(@Param("itemId") Long itemId, @Param("now") LocalDateTime now);
-
-    @Query("SELECT  new ru.practicum.booking.BookingDtoWithDate(b.id, b.startDate, b.endDate) FROM Booking b WHERE b.item.id = :itemId AND b.startDate > CURRENT_TIMESTAMP ORDER BY b.startDate ASC")
-    BookingDtoWithDate findFirstByItemIdAndStartAfterNow(Long itemId);
 
     @Query("SELECT new ru.practicum.booking.BookingDtoWithDate(b.id, b.startDate, b.endDate) FROM Booking b WHERE b.item.id = :itemId AND b.endDate < CURRENT_TIMESTAMP ORDER BY b.endDate DESC")
     BookingDtoWithDate findFirstByItemIdAndEndBeforeNow(Long itemId);
