@@ -3,6 +3,7 @@ package ru.practicum.booking;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,12 +17,14 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByEndDateAfter(LocalDateTime localDateTime);
 
+    List<Booking> findByStartDateAfter(LocalDateTime localDateTime);
+
     List<Booking> findByStatusLike(BookingStatus status);
 
     List<Booking> findByItemIdIn(List<Long> itemIds);
 
-    @Query(value = "SELECT b.id, b.start_date, b.end_date FROM booking as b WHERE b.item_id = ?1 AND b.start_date > ?2 LIMIT 1", nativeQuery = true)
-    BookingDtoWithDate findFirstByItemIdAndStartAfter(Long itemId, LocalDateTime start);
+    @Query("SELECT new ru.practicum.booking.BookingDtoWithDate(b.id, b.startDate, b.endDate) FROM Booking b WHERE b.item.id = :itemId AND b.startDate > :now ORDER BY b.startDate ASC LIMIT 1")
+    BookingDtoWithDate findFirstByItemIdAndStartAfter(@Param("itemId") Long itemId, @Param("now") LocalDateTime now);
 
     @Query("SELECT  new ru.practicum.booking.BookingDtoWithDate(b.id, b.startDate, b.endDate) FROM Booking b WHERE b.item.id = :itemId AND b.startDate > CURRENT_TIMESTAMP ORDER BY b.startDate ASC")
     BookingDtoWithDate findFirstByItemIdAndStartAfterNow(Long itemId);
@@ -31,5 +34,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdAndStartDateBeforeAndEndDateAfter(
             Long bookerId, LocalDateTime start, LocalDateTime end, Sort sort);
-
 }

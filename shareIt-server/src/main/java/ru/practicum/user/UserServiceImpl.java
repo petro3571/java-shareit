@@ -42,7 +42,6 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toSet()).contains(updateUser.getEmail()) && updateUser.getEmail() != null) {
             throw new RuntimeException("Пользователь с почтой " + user.getEmail() + " уже существует.");
         }
-//        User updateUser = UserMapper.mapToUser(user);
 
         updateUser.setId(userId);
         updateUser = repository.save(updateUser);

@@ -102,14 +102,14 @@ public class BookingServiceImpl implements BookingService {
                 return repository.findByBooker_Id(userId).stream().map(BookingMapper::mapToBookingDto).toList();
             case "CURRENT":
                 return repository.findByBookerIdAndStartDateBeforeAndEndDateAfter(userId, LocalDateTime.now(),
-                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start")).stream()
+                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate")).stream()
                         .map(BookingMapper::mapToBookingDto).toList();
             case "PAST":
                 return repository.findByEndDateBefore(LocalDateTime.now()).stream()
                         .filter(booking -> booking.getBooker().getId().equals(userId))
                         .map(BookingMapper::mapToBookingDto).toList();
             case "FUTURE":
-                return repository.findByEndDateAfter(LocalDateTime.now()).stream()
+                return repository.findByStartDateAfter(LocalDateTime.now()).stream()
                         .filter(booking -> booking.getBooker().getId().equals(userId))
                         .map(BookingMapper::mapToBookingDto).toList();
             case "WAITING":
@@ -146,14 +146,14 @@ public class BookingServiceImpl implements BookingService {
 
             case "CURRENT":
                 return repository.findByBookerIdAndStartDateBeforeAndEndDateAfter(userId, LocalDateTime.now(),
-                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "start")).stream()
+                                LocalDateTime.now(), Sort.by(Sort.Direction.DESC, "startDate")).stream()
                         .map(BookingMapper::mapToBookingDto).toList();
             case "PAST":
                 return repository.findByEndDateBefore(LocalDateTime.now()).stream()
                         .filter(booking -> booking.getBooker().getId().equals(userId))
                         .map(BookingMapper::mapToBookingDto).toList();
             case "FUTURE":
-                return repository.findByEndDateAfter(LocalDateTime.now()).stream()
+                return repository.findByStartDateAfter(LocalDateTime.now()).stream()
                         .filter(booking -> booking.getBooker().getId().equals(userId))
                         .map(BookingMapper::mapToBookingDto).toList();
             case "WAITING":
