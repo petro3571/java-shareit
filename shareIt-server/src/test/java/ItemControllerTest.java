@@ -80,7 +80,7 @@ class ItemControllerTest {
     }
 
     @Test
-    void patchItem() throws Exception{
+    void patchItem() throws Exception {
         when(itemService.patchItem(anyLong(),anyLong(),any()))
                 .thenReturn(itemDto);
 
