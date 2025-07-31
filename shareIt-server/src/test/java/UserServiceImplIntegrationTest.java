@@ -113,7 +113,6 @@ class UserServiceImplIntegrationTest {
         });
     }
 
-    // Тесты для getAllUsers
     @Test
     void getAllUsers_ShouldReturnAllUsers() {
         List<UserDto> result = userService.getAllUsers();
@@ -134,7 +133,6 @@ class UserServiceImplIntegrationTest {
         assertTrue(result.isEmpty());
     }
 
-    // Тесты для saveUser
     @Test
     void saveUser_ShouldCreateNewUser() {
         UserDto result = userService.saveUser(userDto);
@@ -154,7 +152,6 @@ class UserServiceImplIntegrationTest {
         });
     }
 
-    // Тесты для getUserById
     @Test
     void getUserById_ShouldReturnUser() {
         UserDto result = userService.getUserById(existingUser.getId());
@@ -172,7 +169,6 @@ class UserServiceImplIntegrationTest {
         });
     }
 
-    // Тесты для deleteUser
     @Test
     void deleteUser_ShouldDeleteUser() {
         UserDto result = userService.deleteUser(existingUser.getId());
@@ -189,7 +185,6 @@ class UserServiceImplIntegrationTest {
         });
     }
 
-    // Дополнительные тесты для проверки уникальности email
     @Test
     void saveUser_WithDuplicateEmail_ShouldThrowDataIntegrityException() {
         UserDto duplicateEmailUser = new UserDto();
