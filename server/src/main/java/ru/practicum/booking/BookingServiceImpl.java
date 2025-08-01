@@ -30,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = BookingMapper.mapToBooking(request);
 
         if (!userRepository.findAll().stream().filter(user -> user.getId().equals(userId)).findFirst().isPresent()) {
-            throw new NotFoundException("Такого Пользователя нет.");
+            throw new NotFoundException("Такого Пользователя нет!");
         } else {
             booking.setBooker(userRepository.findAll().stream()
                     .filter(user -> user.getId().equals(userId)).findFirst().get());
