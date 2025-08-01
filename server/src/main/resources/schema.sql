@@ -1,48 +1,3 @@
-services:
-  gateway:
-    build: gateway
-    image: shareit-gateway
-    container_name: shareit-gateway
-    ports:
-      - "8080:8080"
-    depends_on:
-      - server
-    environment:
-      - SHAREIT_SERVER_URL=http://server:9090
-
-  server:
-    build: server
-    image: shareit-server
-    container_name: shareit-server
-    ports:
-      - "9090:9090"
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - SPRING_DATASOURCE_USERNAME=shareit
-      - SPRING_DATASOURCE_PASSWORD=shareit
-
-  db:
-    image: postgres:16.1
-    container_name: postgres
-    ports:
-      - "6541:5432"
-    environment:
-      - POSTGRES_PASSWORD=shareit
-      - POSTGRES_USER=shareit
-      - POSTGRES_DB=shareit
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
-    command: >
-        bash -c "
-        while ! pg_isready -U shareit -d shareit; do sleep 1; done
-        psql -U shareit -d shareit -c '
           CREATE TABLE IF NOT EXISTS users (
             user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
             name VARCHAR(40),
@@ -92,8 +47,3 @@ services:
             item_id INTEGER REFERENCES items ON DELETE CASCADE,
             request_id INTEGER REFERENCES item_request ON DELETE CASCADE
           );
-        '
-        exec docker-entrypoint.sh postgres
-        "
-volumes:
-   pg_data:
