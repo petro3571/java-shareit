@@ -34,12 +34,66 @@ services:
       - POSTGRES_DB=shareit
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
+    command: >
+        bash -c "
+        while ! pg_isready -U shareit -d shareit; do sleep 1; done
+        psql -U shareit -d shareit -c '
+          CREATE TABLE IF NOT EXISTS users (
+            user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            name VARCHAR(40),
+            email VARCHAR(255)
+          );
 
+          CREATE TABLE IF NOT EXISTS booking_status (
+            id INT PRIMARY KEY,
+            name VARCHAR(40) NOT NULL
+          );
+
+          CREATE TABLE IF NOT EXISTS item_request (
+            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            description VARCHAR(255) NOT NULL,
+            user_id INTEGER REFERENCES users ON DELETE CASCADE,
+            created TIMESTAMP WITHOUT TIME ZONE
+          );
+
+          CREATE TABLE IF NOT EXISTS items (
+            item_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            name VARCHAR(40),
+            description VARCHAR(255),
+            available BOOLEAN,
+            owner_id INTEGER REFERENCES users ON DELETE CASCADE,
+            request_id INTEGER REFERENCES item_request ON DELETE CASCADE
+          );
+
+          CREATE TABLE IF NOT EXISTS booking (
+            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            start_date TIMESTAMP WITHOUT TIME ZONE,
+            end_date TIMESTAMP WITHOUT TIME ZONE,
+            item_id INTEGER REFERENCES items ON DELETE CASCADE,
+            booker_id INTEGER REFERENCES users ON DELETE CASCADE,
+            status varchar(50)
+          );
+
+          CREATE TABLE IF NOT EXISTS comments (
+            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            item_id INTEGER REFERENCES items ON DELETE CASCADE,
+            author_id INTEGER REFERENCES users ON DELETE CASCADE,
+            text VARCHAR(255),
+            created TIMESTAMP WITHOUT TIME ZONE
+          );
+
+          CREATE TABLE IF NOT EXISTS responses (
+            id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+            item_id INTEGER REFERENCES items ON DELETE CASCADE,
+            request_id INTEGER REFERENCES item_request ON DELETE CASCADE
+          );
+        '
+        exec docker-entrypoint.sh postgres
+        "
 volumes:
    pg_data:
