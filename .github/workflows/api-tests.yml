@@ -6,7 +6,3 @@ on:
 jobs:
   build:
     uses: yandex-praktikum/java-shareit/.github/workflows/api-tests.yml@ci
-
-steps:
-  - name: Check init.sql
-    run: ls -la ./init.sql
