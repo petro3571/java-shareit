@@ -10,6 +10,7 @@ import ru.practicum.ShareItServerApp;
 import ru.practicum.booking.BookingRepository;
 import ru.practicum.booking.Booking;
 import ru.practicum.booking.BookingStatus;
+import ru.practicum.exceptions.BookingNotFinishedException;
 import ru.practicum.exceptions.NotFoundUserException;
 import ru.practicum.exceptions.NotFoundUserForItemException;
 import ru.practicum.item.comment.CommentDto;
@@ -304,5 +305,41 @@ class ItemServiceImplIntegrationTest {
         newComment.setText("New Comment");
 
         assertThrows(RuntimeException.class, () -> itemService.postComment(booker.getId(), item.getId(), newComment));
+    }
+
+    @Test
+    void postComment_shouldThrowBookingNotFinishedException_whenBookingNotFinished() {
+        User user = new User();
+        user.setName("Test User");
+        user.setEmail("test@example.com");
+        user = userRepository.save(user);
+
+        User finalUser = user;
+
+        Item item = new Item();
+        item.setName("Test Item");
+        item.setDescription("Test Description");
+        item.setAvailable(true);
+        item.setOwner(user);
+        item = itemRepository.save(item);
+        Item finalItem = item;
+
+        Booking booking = new Booking();
+        booking.setBooker(user);
+        booking.setItem(item);
+        booking.setStatus(BookingStatus.APPROVED);
+        booking.setStartDate(LocalDateTime.now().minusDays(1));
+        booking.setEndDate(LocalDateTime.now().plusDays(1)); // Аренда закончится через день
+        booking = bookingRepository.save(booking);
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setText("Test comment");
+
+        BookingNotFinishedException exception = assertThrows(
+                BookingNotFinishedException.class,
+                () -> itemService.postComment(finalUser.getId(), finalItem.getId(), commentDto)
+        );
+
+        assertEquals("Отзыв можно оставить только после окончания срока аренды", exception.getMessage());
     }
 }
