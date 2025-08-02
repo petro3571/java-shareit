@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.booking.Booking;
 import ru.practicum.booking.BookingRepository;
+import ru.practicum.booking.BookingStatus;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.exceptions.NotFoundUserException;
 import ru.practicum.exceptions.NotFoundUserForItemException;
@@ -137,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Booking booking = bookingRepository.findByBooker_IdAndItem_Id(userId, itemId);
 
-        if (booking.equals(null)) {
+        if (booking.equals(null) || booking.getStatus().equals(BookingStatus.APPROVED)) {
             throw new NotFoundException("Пользователь не является арендатором вещи.");
         } else {
             if (booking.getEndDate().isBefore(LocalDateTime.now().plusHours(8))) {
