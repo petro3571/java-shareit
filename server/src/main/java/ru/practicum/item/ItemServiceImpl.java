@@ -149,7 +149,7 @@ public class ItemServiceImpl implements ItemService {
         log.info(endDateMoscow.toString());
         log.info(nowDateTimeMoscow.toString());
 
-        if (endDateMoscow.isAfter(nowDateTimeMoscow.plusHours(8))) {
+        if (endDateMoscow.isAfter(nowDateTimeMoscow)) {
             throw new BookingNotFinishedException("Отзыв можно оставить только после окончания срока аренды");
         }
 
