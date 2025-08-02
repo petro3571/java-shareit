@@ -295,7 +295,7 @@ class ItemServiceImplIntegrationTest {
         CommentDto newComment = new CommentDto();
         newComment.setText("New Comment");
 
-        assertThrows(NullPointerException.class, () -> itemService.postComment(owner.getId(), item.getId(), newComment));
+        assertThrows(NotFoundUserException.class, () -> itemService.postComment(owner.getId(), item.getId(), newComment));
     }
 
     @Test
