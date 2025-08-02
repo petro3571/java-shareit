@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.booking.Booking;
 import ru.practicum.booking.BookingRepository;
-import ru.practicum.booking.BookingStatus;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.exceptions.NotFoundUserException;
 import ru.practicum.exceptions.NotFoundUserForItemException;
