@@ -138,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Booking booking = bookingRepository.findByBooker_IdAndItem_Id(userId, itemId);
 
-        if (booking.equals(null) || booking.getStatus().equals(BookingStatus.APPROVED)) {
+        if (booking.equals(null)) {
             throw new NotFoundException("Пользователь не является арендатором вещи.");
         } else {
             if (booking.getEndDate().isBefore(LocalDateTime.now().plusHours(8))) {

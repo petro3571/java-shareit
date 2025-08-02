@@ -279,7 +279,7 @@ class ItemServiceImplIntegrationTest {
         Booking finishedBooking = new Booking();
         finishedBooking.setItem(newItem);
         finishedBooking.setBooker(newBooker);
-        finishedBooking.setStatus(BookingStatus.WAITING);
+        finishedBooking.setStatus(BookingStatus.APPROVED);
         finishedBooking.setStartDate(LocalDateTime.now().minusDays(5));
         finishedBooking.setEndDate(LocalDateTime.now().minusDays(4));
         bookingRepository.save(finishedBooking);
