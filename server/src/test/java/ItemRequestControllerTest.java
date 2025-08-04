@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -108,16 +109,30 @@ class ItemRequestControllerTest {
 
     @Test
     void getAllRequests() throws Exception {
-        when(itemRequestService.getAllRequests(anyLong()))
-                .thenReturn(List.of(requestDto));
+        List<ItemRequestDtoWithResponses> content = List.of(requestDto);
+        Page<ItemRequestDtoWithResponses> page = new PageImpl<>(
+                content,
+                PageRequest.of(0, 10),
+                1
+        );
+
+        when(itemRequestService.getAllRequests(anyLong(), any()))
+                .thenReturn(page);
 
         mvc.perform(get("/requests/all")
                         .header("X-Sharer-User-Id", userId)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .param("sort", "created,desc")
                         .accept(MediaType.APPLICATION_JSON))
+
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(requestDto.getId()), Long.class))
-                .andExpect(jsonPath("$[0].items[0].name", is("Drel")));
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is(requestDto.getId()), Long.class))
+                .andExpect(jsonPath("$.content[0].items[0].name", is("Drel")))
+                .andExpect(jsonPath("$.pageable.pageNumber", is(0)))
+                .andExpect(jsonPath("$.pageable.pageSize", is(10)))
+                .andExpect(jsonPath("$.totalElements", is(1)));
     }
 
     @Test

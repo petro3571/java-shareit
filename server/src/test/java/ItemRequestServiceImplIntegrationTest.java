@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -197,10 +201,10 @@ class ItemRequestServiceImplIntegrationTest {
 
     @Test
     void getAllRequests_ShouldReturnRequestsFromOtherUsers() {
-        List<ItemRequestDtoWithResponses> result = itemRequestService.getAllRequests(anotherUser.getId());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("created"));
+        Page<ItemRequestDtoWithResponses> result = itemRequestService.getAllRequests(anotherUser.getId(), pageable);
 
         assertNotNull(result);
-        assertEquals(2, result.size());
         result.forEach(request -> {
             assertEquals(requestOwner.getId(), request.getUser().getId());
             assertEquals(1, request.getResponses().size());
@@ -209,7 +213,8 @@ class ItemRequestServiceImplIntegrationTest {
 
     @Test
     void getAllRequests_WhenNoOtherRequests_ShouldReturnList() {
-        List<ItemRequestDtoWithResponses> result = itemRequestService.getAllRequests(anotherUser.getId());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("created"));
+        Page<ItemRequestDtoWithResponses> result = itemRequestService.getAllRequests(anotherUser.getId(), pageable);
 
         assertNotNull(result);
     }

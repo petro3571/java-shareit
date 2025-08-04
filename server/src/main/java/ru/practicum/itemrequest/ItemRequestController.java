@@ -1,6 +1,10 @@
 package ru.practicum.itemrequest;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,8 +32,13 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDtoWithResponses> getAllRequests(@RequestHeader(REQUEST_HEADER) long userId) {
-        return service.getAllRequests(userId);
+    public Page<ItemRequestDtoWithResponses> getAllRequests(@RequestHeader(REQUEST_HEADER) long userId,
+                                                            @RequestParam(required = false, defaultValue = "0") int pageNum,
+                                                            @RequestParam(required = false, defaultValue = "10") int limit,
+                                                            @RequestParam(required = false, defaultValue = "created") String sortBy) {
+        Pageable pageable = PageRequest.of(pageNum, limit, Sort.by(sortBy));
+
+        return service.getAllRequests(userId, pageable);
     }
 
     @GetMapping("/{requestId}")

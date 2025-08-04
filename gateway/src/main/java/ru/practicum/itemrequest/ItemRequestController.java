@@ -4,10 +4,14 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.HashMap;
+import java.util.Map;
+
+@Controller
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 @Validated
@@ -28,8 +32,15 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllRequests(@RequestHeader(REQUEST_HEADER) @Min(1) long userId) {
-        return client.getAllRequests(userId);
+    public ResponseEntity<Object> getAllRequests(@RequestHeader(REQUEST_HEADER) @Min(1) long userId,
+                                                 @RequestParam(required = false, defaultValue = "0") int pageNum,
+                                                 @RequestParam(required = false, defaultValue = "10") int limit,
+                                                 @RequestParam(required = false, defaultValue = "created") String sortBy) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("pageNum", pageNum);
+        parameters.put("limit", limit);
+        parameters.put("sortBy", sortBy);
+        return client.getAllRequests(userId, parameters);
     }
 
     @GetMapping("/{requestId}")

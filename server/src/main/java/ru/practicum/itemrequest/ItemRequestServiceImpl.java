@@ -2,6 +2,8 @@ package ru.practicum.itemrequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.item.ItemDto;
@@ -11,6 +13,8 @@ import ru.practicum.itemrequest.responsetoitemreq.ResponseToItemReqDto;
 import ru.practicum.itemrequest.responsetoitemreq.ResponseToItemReqMapper;
 import ru.practicum.itemrequest.responsetoitemreq.ResponseToItemReqRepo;
 import ru.practicum.user.UserRepository;
+
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -27,17 +31,32 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ResponseToItemReqRepo responseRepository;
 
     @Override
-    public List<ItemRequestDtoWithResponses> getAllRequests(Long userId) {
-        List<ItemRequestDtoWithResponses> listRequests = repository.findAllByUser_IdNot(userId).stream()
-                .map(ItemRequestMapper::mapToRequestWithResponses).toList();
-        List<ItemRequestDtoWithResponses> newList = listRequests.stream().peek(i -> {
-            List<ResponseToItemReqDto> responses = responseRepository.findByRequest_Id(i.getId()).stream()
-                    .map(ResponseToItemReqMapper::mapToDto).collect(Collectors.toList());
-            if (!responses.isEmpty()) {
-                i.setResponses(responses);
-            }
-        }).sorted(Comparator.comparing(ItemRequestDtoWithResponses::getCreated).reversed()).collect(Collectors.toList());
-        return newList;
+    public Page<ItemRequestDtoWithResponses> getAllRequests(Long userId, Pageable pageable) {
+        Page<ItemRequest> requestsPage = repository.findAllByUser_IdNot(userId, pageable);
+
+        List<ItemRequestDtoWithResponses> content = requestsPage.getContent().stream()
+                .map(request -> {
+                    ItemRequestDtoWithResponses dto = ItemRequestMapper.mapToRequestWithResponses(request);
+
+                    List<ResponseToItemReqDto> responses = responseRepository.findByRequest_Id(request.getId())
+                            .stream()
+                            .map(ResponseToItemReqMapper::mapToDto)
+                            .collect(Collectors.toList());
+
+                    if (!responses.isEmpty()) {
+                        dto.setResponses(responses);
+                    }
+
+                    return dto;
+                })
+                .sorted(Comparator.comparing(ItemRequestDtoWithResponses::getCreated).reversed())
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(
+                content,
+                requestsPage.getPageable(),
+                requestsPage.getTotalElements()
+        );
     }
 
     @Override

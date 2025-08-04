@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.BaseClient;
 
+import java.util.Map;
+
 @Service
 public class ItemRequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
@@ -29,8 +31,8 @@ public class ItemRequestClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getAllRequests(Long userId) {
-        return get("/all", userId);
+    public ResponseEntity<Object> getAllRequests(Long userId, Map<String, Object> parameters) {
+        return get("/all?pageNum=" + parameters.get("pageNum") + "&limit=" + parameters.get("limit") + "&sortBy=" + parameters.get("sortBy"), userId, parameters);
     }
 
     public ResponseEntity<Object> getRequest(Long requestId, Long userId) {
