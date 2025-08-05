@@ -49,3 +49,9 @@ logs/
 
 # Base
 db/postgres/
+
+**/target/
+**/.mvn/
+**/.git/
+**/.idea/
+*.iml

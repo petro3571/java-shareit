@@ -1,0 +1,179 @@
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.booking.*;
+import ru.practicum.exceptions.NotFoundUserException;
+import ru.practicum.item.Item;
+import ru.practicum.item.ItemDto;
+import ru.practicum.item.ItemRepository;
+import ru.practicum.item.ItemServiceImpl;
+import ru.practicum.item.comment.CommentRepository;
+import ru.practicum.user.User;
+import ru.practicum.user.UserDto;
+import ru.practicum.user.UserRepository;
+import ru.practicum.user.UserServiceImpl;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ShareItServerAppTest {
+
+    @Mock
+    private ItemRepository itemRepository;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private BookingRepository bookingRepository;
+
+    @Mock
+    private CommentRepository commentRepository;
+
+    @InjectMocks
+    private ItemServiceImpl itemService;
+
+
+    @InjectMocks
+    private UserServiceImpl userService;
+
+    @InjectMocks
+    private BookingServiceImpl bookingService;
+
+    @Test
+    void getItem_whenItemExists_thenReturnItemDtoWithDates() {
+        Long userId = 1L;
+        Long itemId = 1L;
+        Item item = new Item();
+        item.setId(itemId);
+        item.setName("Test Item");
+        item.setDescription("Test Description");
+        item.setAvailable(true);
+
+        User owner = new User();
+        owner.setId(2L);
+        item.setOwner(owner);
+
+        when(itemRepository.getById(itemId)).thenReturn(item);
+        when(bookingRepository.findFirstByItemIdAndEndBeforeNow(itemId)).thenReturn(null);
+        when(commentRepository.findByItemId(itemId)).thenReturn(null);
+
+        ItemDto result = itemService.getItem(userId, itemId);
+
+        assertNotNull(result);
+        assertEquals(itemId, result.getId());
+        assertEquals("Test Item", result.getName());
+        assertNull(result.getLastBooking());
+        assertNull(result.getNextBooking());
+        assertTrue(result.getComments().isEmpty());
+    }
+
+    @Test
+    void addNewItem_whenUserNotExists_thenThrowNotFoundException() {
+        Long userId = 99L;
+        ItemDto request = new ItemDto();
+
+        when(userRepository.findAll()).thenReturn(List.of());
+
+        assertThrows(NotFoundUserException.class, () -> {
+            itemService.addNewItem(userId, request);
+        });
+    }
+
+    @Test
+    void saveUser_whenValidData_thenUserSaved() {
+        UserDto request = new UserDto(null, "New User", "new@email.com");
+        User savedUser = new User(1L, "new@email.com", "New User");
+
+        when(userRepository.findAll()).thenReturn(List.of());
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        UserDto result = userService.saveUser(request);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("New User", result.getName());
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_whenValidData_thenUserUpdated() {
+        Long userId = 1L;
+        UserDto request = new UserDto(null, "Updated Name", "updated@email.com");
+        User existingUser = new User(userId, "old@email.com", "Old Name");
+        User updatedUser = new User(userId, "updated@email.com", "Updated Name");
+
+        when(userRepository.getById(userId)).thenReturn(existingUser);
+        when(userRepository.findAll()).thenReturn(List.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
+
+        UserDto result = userService.updateUser(request, userId);
+
+        assertEquals(userId, result.getId());
+        assertEquals("Updated Name", result.getName());
+        assertEquals("updated@email.com", result.getEmail());
+    }
+
+    @Test
+    void deleteUser_whenUserExists_thenUserDeleted() {
+        Long userId = 1L;
+        User user = new User(userId,"delete@email.com", "User to delete");
+
+        when(userRepository.getById(userId)).thenReturn(user);
+
+        UserDto result = userService.deleteUser(userId);
+
+        assertEquals(userId, result.getId());
+        verify(userRepository, times(1)).delete(user);
+    }
+
+    @Test
+    void postBooking_whenValidData_thenBookingSaved() {
+        Long userId = 1L;
+        Long itemId = 1L;
+        BookingDtoWithDate request = new BookingDtoWithDate(
+                1L,
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(2)
+        );
+
+        User booker = new User(userId, "Booker", "booker@email.com");
+        Item item = new Item(itemId, new User(2L, "owner@email.com", "Owner"), "Item", "Description", true, null);
+        Booking savedBooking = BookingMapper.mapToBookingFromWithDate(request);
+        savedBooking.setId(1L);
+        savedBooking.setBooker(booker);
+        savedBooking.setItem(item);
+        savedBooking.setStatus(BookingStatus.WAITING);
+        BookingDto dto = BookingMapper.mapToBookingDto(savedBooking);
+        dto.setItemId(item.getId());
+
+        when(itemRepository.findAll()).thenReturn(List.of(item));
+        when(userRepository.findAll()).thenReturn(List.of(booker));
+        when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
+
+
+        BookingDto result = bookingService.postBooking(userId, dto);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals(itemId, result.getItem().getId());
+        assertEquals(userId, result.getBooker().getId());
+        assertEquals(BookingStatus.WAITING, result.getStatus());
+    }
+
+    @Test
+    void postBooking_whenItemNotFound_thenThrowException() {
+        Long userId = 1L;
+        BookingDto dto = new BookingDto();
+        dto.setItemId(999L);
+
+        assertThrows(NotFoundUserException.class,
+                () -> bookingService.postBooking(userId, dto));
+    }
+}
